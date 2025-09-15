@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batik AI - Desain Batik Modern dengan Kecerdasan Buatan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, #FFD700 0%, #DAA520 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #DAA520 0%, #B8860B 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(218, 165, 32, 0.3);
+        }
+        
+        .batik-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d1d5db' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .notification {
+            transform: translateX(100%);
+        }
+        
+        .preview-placeholder {
+            background: linear-gradient(135deg, #e6e6e6 0%, #f5f5f5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .template-card {
+            transition: all 0.3s ease;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-option {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .color-option:hover, .color-option.active {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Editor Styles */
+        .editor-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 100;
+            flex-direction: column;
+        }
+        
+        .editor-toolbar {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .tool-btn {
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tool-btn:hover {
+            background: #f1f5f9;
+        }
+        
+        .tool-btn.active {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+        
+        .color-picker-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #d1d5db;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            overflow: auto;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #drawing-canvas {
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .editor-bottom-bar {
+            padding: 10px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .editor-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 101;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .shape-option {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .shape-option:hover {
+            background: #f1f5f9;
+        }
+        
+        .shape-option.active {
+            border-color: #4f46e5;
+            background: #e0e7ff;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+    <!-- Header -->
+    <header class="fixed w-full bg-white shadow-md z-40">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#" class="flex items-center space-x-2">
+                    <span class="text-2xl font-bold text-amber-600">Batik<span class="text-blue-600">AI</span></span>
+                </a>
+                
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-amber-600 transition">Beranda</a>
+                    <a href="#templates" class="text-gray-700 hover:text-amber-600 transition">Template</a>
+                    <a href="#ai-tool" class="text-gray-700 hover:text-amber-600 transition">AI Tool</a>
+                    <a href="#editor" class="text-gray-700 hover:text-amber-600 transition">Editor</a>
+                    <a href="#about" class="text-gray-700 hover:text-amber-600 transition">Tentang</a>
+                    <a href="#contact" class="text-gray-700 hover:text-amber-600 transition">Kontak</a>
+                </nav>
+                
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-700" aria-expanded="false">
+                    <i data-feather="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-3">
+                <a href="#home" class="py-2 text-gray-700 hover:text-amber-600 transition">Beranda</a>
+                <a href="#templates" class="py-2 text-gray-700 hover:text-amber-600 transition">Template</a>
+                <a href="#ai-tool" class="py-2 text-gray-700 hover:text-amber-600 transition">AI Tool</a>
+                <a href="#editor" class="py-2 text-gray-700 hover:text-amber-600 transition">Editor</a>
+                <a href="#about" class="py-2 text-gray-700 hover:text-amber-600 transition">Tentang</a>
+                <a href="#contact" class="py-2 text-gray-700 hover:text-amber-600 transition">Kontak</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-24 pb-16 gradient-bg batik-pattern">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Desain Batik Modern dengan <span class="text-amber-600">Kecerdasan Buatan</span></h1>
+                    <p class="text-lg text-gray-700 mb-6">Transformasikan ide Anda menjadi desain batik yang unik dan autentik dengan teknologi AI terkini.</p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#ai-tool" class="btn-gold text-white px-6 py-3 rounded-lg font-medium inline-flex items-center">
+                            <i data-feather="sparkles" class="mr-2"></i>
+                            <span>Coba AI Tool</span>
+                        </a>
+                        <a href="#editor" class="bg-white text-amber-600 border border-amber-600 px-6 py-3 rounded-lg font-medium inline-flex items-center">
+                            <i data-feather="edit-3" class="mr-2"></i>
+                            <span>Editor Manual</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute -top-6 -left-6 w-32 h-32 bg-amber-200 rounded-full opacity-50"></div>
+                        <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-200 rounded-full opacity-50"></div>
+                        <img src="https://placehold.co/600x500/e5e7eb/9ca3af?text=Batik+AI+Design" alt="Contoh Desain Batik AI" class="relative z-10 rounded-xl shadow-xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates Section -->
+    <section id="templates" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Pilih Template Batik</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Pilih dari berbagai template batik tradisional dan modern sebagai dasar untuk desain Anda.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://placehold.co/400x300/e5e7eb/9ca3af?text=Parang" alt="Template Parang" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Parang</h3>
+                        <p class="text-gray-600 mb-4">Motif batik klasik dengan pola garis miring yang elegan.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Parang">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://placehold.co/400x300/e5e7eb/9ca3af?text=Mega+Mendung" alt="Template Mega Mendung" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Mega Mendung</h3>
+                        <p class="text-gray-600 mb-4">Motif awan dengan gradasi warna yang menakjubkan.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Mega Mendung">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://placehold.co/400x300/e5e7eb/9ca3af?text=Kawung" alt="Template Kawung" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Kawung</h3>
+                        <p class="text-gray-600 mb-4">Motif geometris berbentuk bulatan seperti buah kawung.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Kawung">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Tool Section -->
+    <section id="ai-tool" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Desain Batik dengan AI</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Pilih template, tentukan preferensi warna, dan biarkan AI kami membuatkan desain batik unik untuk Anda.</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="template-select">Pilih Template</label>
+                            <select id="template-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                                <option value="">-- Pilih Template --</option>
+                                <option value="Parang">Parang</option>
+                                <option value="Mega Mendung">Mega Mendung</option>
+                                <option value="Kawung">Kawung</option>
+                                <option value="Sekar Jagad">Sekar Jagad</option>
+                                <option value="Truntum">Truntum</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium">Pilihan Warna</label>
+                            <div class="grid grid-cols-4 gap-3">
+                                <div class="color-option active bg-red-600 rounded-lg h-12 flex items-center justify-center text-white font-medium text-sm" data-color="#dc2626">Merah</div>
+                                <div class="color-option bg-blue-600 rounded-lg h-12 flex items-center justify-center text-white font-medium text-sm" data-color="#2563eb">Biru</div>
+                                <div class="color-option bg-green-600 rounded-lg h-12 flex items-center justify-center text-white font-medium text-sm" data-color="#16a34a">Hijau</div>
+                                <div class="color-option bg-yellow-500 rounded-lg h-12 flex items-center justify-center text-white font-medium text-sm" data-color="#eab308">Kuning</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="color-instruction">Instruksi Warna (Opsional)</label>
+                            <textarea id="color-instruction" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" rows="3" placeholder="Contoh: Saya ingin warna dominan biru dengan aksen emas..."></textarea>
+                        </div>
+                        
+                        <button id="process-button" class="btn-gold text-white px-6 py-3 rounded-lg font-medium w-full flex items-center justify-center">
+                            <i data-feather="wand" class="mr-2"></i>
+                            <span>Proses dengan AI</span>
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-medium">Pratinjau Hasil</label>
+                        <div id="preview-container" class="preview-placeholder rounded-lg h-64 mb-4 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-500">
+                            <i data-feather="image" class="w-12 h-12 mb-2"></i>
+                            <p>Hasil akan muncul di sini</p>
+                        </div>
+                        
+                        <div id="color-palette" class="hidden mb-4">
+                            <label class="block text-gray-700 mb-2 font-medium">Palet Warna yang Digunakan</label>
+                            <div class="flex space-x-2">
+                                <div class="w-8 h-8 bg-red-600 rounded"></div>
+                                <div class="w-8 h-8 bg-amber-500 rounded"></div>
+                                <div class="w-8 h-8 bg-gray-800 rounded"></div>
+                                <div class="w-8 h-8 bg-white border border-gray-300 rounded"></div>
+                            </div>
+                        </div>
+                        
+                        <button id="download-button" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium w-full flex items-center justify-center" disabled>
+                            <i data-feather="download" class="mr-2"></i>
+                            <span>Download Desain</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Editor Section -->
+    <section id="editor" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Editor Batik Manual</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Buat desain batik Anda sendiri dengan alat editing yang mudah digunakan.</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Alat Desain Lengkap</h3>
+                        <p class="text-gray-600 mb-4">Gunakan editor manual kami untuk membuat desain batik dari awal atau mengedit template yang sudah ada.</p>
+                        <ul class="text-gray-600 space-y-2 mb-6">
+                            <li class="flex items-center"><i data-feather="check-circle" class="text-green-500 mr-2"></i> Berbagai alat menggambar (pensil, kuas, bentuk)</li>
+                            <li class="flex items-center"><i data-feather="check-circle" class="text-green-500 mr-2"></i> Pilihan warna lengkap dengan palet khusus batik</li>
+                            <li class="flex items-center"><i data-feather="check-circle" class="text-green-500 mr-2"></i> Layer management untuk desain yang kompleks</li>
+                            <li class="flex items-center"><i data-feather="check-circle" class="text-green-500 mr-2"></i> Simpan dan ekspor dalam berbagai format</li>
+                        </ul>
+                        <button id="open-editor-btn" class="btn-gold text-white px-6 py-3 rounded-lg font-medium inline-flex items-center">
+                            <i data-feather="edit-3" class="mr-2"></i>
+                            <span>Buka Editor</span>
+                        </button>
+                    </div>
+                    
+                    <div class="flex justify-center">
+                        <div class="relative w-full max-w-md">
+                            <div class="absolute -top-4 -left-4 w-24 h-24 bg-amber-200 rounded-full opacity-50"></div>
+                            <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-blue-200 rounded-full opacity-50"></div>
+                            <img src="https://placehold.co/500x400/e5e7eb/9ca3af?text=Editor+Batik" alt="Editor Batik" class="relative z-10 rounded-xl shadow-xl">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Editor Container -->
+    <div id="editor-container" class="editor-container">
+        <div class="editor-toolbar">
+            <div class="tool-group">
+                <div class="tool-btn active" data-tool="select" title="Select Tool">
+                    <i data-feather="mouse-pointer"></i>
+                </div>
+                <div class="tool-btn" data-tool="pencil" title="Pencil Tool">
+                    <i data-feather="edit"></i>
+                </div>
+                <div class="tool-btn" data-tool="brush" title="Brush Tool">
+                    <i data-feather="pen-tool"></i>
+                </div>
+                <div class="tool-btn" data-tool="shape" title="Shape Tool">
+                    <i data-feather="square"></i>
+                </div>
+                <div class="tool-btn" data-tool="text" title="Text Tool">
+                    <i data-feather="type"></i>
+                </div>
+                <div class="tool-btn" data-tool="eraser" title="Eraser Tool">
+                    <i data-feather="x"></i>
+                </div>
+            </div>
+            
+            <div class="tool-group">
+                <input type="color" id="color-picker" value="#000000" class="color-picker-btn">
+                <div class="tool-btn" id="stroke-width-btn" title="Stroke Width">
+                    <i data-feather="minimize"></i> 2px
+                </div>
+            </div>
+            
+            <div class="tool-group">
+                <div class="tool-btn" id="undo-btn" title="Undo">
+                    <i data-feather="rotate-ccw"></i>
+                </div>
+                <div class="tool-btn" id="redo-btn" title="Redo">
+                    <i data-feather="rotate-cw"></i>
+                </div>
+                <div class="tool-btn" id="clear-btn" title="Clear Canvas">
+                    <i data-feather="trash-2"></i>
+                </div>
+            </div>
+            
+            <div class="tool-group">
+                <div class="tool-btn" id="save-btn" title="Save Design">
+                    <i data-feather="save"></i>
+                </div>
+                <div class="tool-btn" id="export-btn" title="Export Design">
+                    <i data-feather="download"></i>
+                </div>
+                <div class="tool-btn" id="close-editor-btn" title="Close Editor">
+                    <i data-feather="x"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="drawing-canvas" width="800" height="600"></canvas>
+        </div>
+        
+        <div class="editor-bottom-bar">
+            <div class="zoom-controls">
+                <button id="zoom-out-btn" class="tool-btn">
+                    <i data-feather="zoom-out"></i>
+                </button>
+                <span id="zoom-level">100%</span>
+                <button id="zoom-in-btn" class="tool-btn">
+                    <i data-feather="zoom-in"></i>
+                </button>
+            </div>
+            <div class="cursor-position">
+                X: 0, Y: 0
+            </div>
+        </div>
+    </div>
+    
+    <!-- Shape Modal -->
+    <div id="shape-modal" class="editor-modal">
+        <div class="modal-content">
+            <h3 class="text-lg font-semibold mb-4">Pilih Bentuk</h3>
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="shape-option active" data-shape="rectangle">
+                    <i data-feather="square" class="w-8 h-8 mx-auto mb-2"></i>
+                    <span>Persegi</span>
+                </div>
+                <div class="shape-option" data-shape="circle">
+                    <i data-feather="circle" class="w-8 h-8 mx-auto mb-2"></i>
+                    <span>Lingkaran</span>
+                </div>
+                <div class="shape-option" data-shape="line">
+                    <i data-feather="minus" class="w-8 h-8 mx-auto mb-2"></i>
+                    <span>Garis</span>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button id="close-shape-modal" class="px-4 py-2 bg-gray-200 rounded-lg mr-2">Batal</button>
+                <button id="apply-shape" class="px-4 py-2 bg-amber-500 text-white rounded-lg">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Tentang BatikAI</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Mengenal lebih dalam teknologi di balik platform desain batik berbasis AI kami.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Inovasi Teknologi untuk Melestarikan Warisan Budaya</h3>
+                    <p class="text-gray-600 mb-4">BatikAI menggabungkan kecerdasan buatan dengan warisan budaya Indonesia untuk menciptakan desain batik yang inovatif dan autentik.</p>
+                    <p class="text-gray-600 mb-4">Platform kami menggunakan algoritma machine learning yang telah dilatih dengan ribuan pola batik tradisional untuk memahami karakteristik dan estetika batik Indonesia.</p>
+                    <div class="flex items-center mt-8">
+                        <div class="bg-amber-100 text-amber-800 px-4 py-2 rounded-lg mr-4 font-medium">AI Canggih</div>
+                        <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg mr-4 font-medium">Ramah Pengguna</div>
+                        <div class="bg-green-100 text-green-800 px-4 py-2 rounded-lg font-medium">Hasil Berkualitas</div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute -top-4 -left-4 w-24 h-24 bg-amber-200 rounded-full opacity-50"></div>
+                        <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-blue-200 rounded-full opacity-50"></div>
+                        <img src="https://placehold.co/500x400/e5e7eb/9ca3af?text=AI+Technology" alt="Teknologi AI" class="relative z-10 rounded-xl shadow-xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Hubungi Kami</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Punya pertanyaan atau masukan? Kami siap membantu Anda.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                    <form id="contact-form" class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="name">Nama Lengkap</label>
+                            <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="email">Email</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="message">Pesan</label>
+                            <textarea id="message" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-gold text-white px-6 py-3 rounded-lg font-medium w-full flex items-center justify-center">
+                            <i data-feather="send" class="mr-2"></i>
+                            <span>Kirim Pesan</span>
+                        </button>
+                    </form>
+                </div>
+                
+                <div>
+                    <div class="bg-white rounded-xl shadow-md p-6 md:p-8 h-full">
+                        <h3 class="text-xl font-semibold mb-6">Informasi Kontak</h3>
+                        
+                        <div class="flex items-start mb-6">
+                            <div class="bg-amber-100 p-3 rounded-lg mr-4">
+                                <i data-feather="map-pin" class="text-amber-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Alamat</h4>
+                                <p class="text-gray-600">Jl. Batik Indah No. 123, Yogyakarta, Indonesia</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start mb-6">
+                            <div class="bg-amber-100 p-3 rounded-lg mr-4">
+                                <i data-feather="mail" class="text-amber-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Email</h4>
+                                <p class="text-gray-600">info@batikai.id</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start mb-6">
+                            <div class="bg-amber-100 p-3 rounded-lg mr-4">
+                                <i data-feather="phone" class="text-amber-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Telepon</h4>
+                                <p class="text-gray-600">+62 123 456 789</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-amber-100 p-3 rounded-lg mr-4">
+                                <i data-feather="clock" class="text-amber-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Jam Operasional</h4>
+                                <p class="text-gray-600">Senin - Jumat: 09:00 - 17:00 WIB</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Batik<span class="text-amber-400">AI</span></h3>
+                    <p class="text-gray-400 mb-4">Mengubah cara Anda mendesain batik dengan teknologi kecerdasan buatan.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-amber-400 transition">
+                            <i data-feather="facebook" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-amber-400 transition">
+                            <i data-feather="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-amber-400 transition">
+                            <i data-feather="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-amber-400 transition">
+                            <i data-feather="youtube" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Tautan Cepat</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-amber-400 transition">Beranda</a></li>
+                        <li><a href="#templates" class="text-gray-400 hover:text-amber-400 transition">Template</a></li>
+                        <li><a href="#ai-tool" class="text-gray-400 hover:text-amber-400 transition">AI Tool</a></li>
+                        <li><a href="#editor" class="text-gray-400 hover:text-amber-400 transition">Editor</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-amber-400 transition">Tentang</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-amber-400 transition">Kontak</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Sumber Daya</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-amber-400 transition">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-amber-400 transition">Tutorial</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-amber-400 transition">Dokumentasi</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-amber-400 transition">Bantuan</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Berlangganan Newsletter</h4>
+                    <p class="text-gray-400 mb-4">Dapatkan update terbaru tentang fitur dan template baru.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Email Anda" class="px-4 py-2 rounded-l-lg focus:outline-none text-gray-800 w-full">
+                        <button type="submit" class="bg-amber-500 hover:bg-amber-600 px-4 py-2 rounded-r-lg transition">Kirim</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 BatikAI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Your JavaScript code -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Feather icons
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+            
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('open');
+                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                    mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                    
+                    // Update icon based on state
+                    const menuIcon = mobileMenuButton.querySelector('i');
+                    if (menuIcon) {
+                        if (mobileMenu.classList.contains('open')) {
+                            menuIcon.setAttribute('data-feather', 'x');
+                        } else {
+                            menuIcon.setAttribute('data-feather', 'menu');
+                        }
+                        feather.replace();
+                    }
+                });
+                
+                // Close mobile menu when clicking on links
+                const mobileLinks = mobileMenu.querySelectorAll('a');
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.remove('open');
+                        mobileMenuButton.setAttribute('aria-expanded', 'false');
+                        const menuIcon = mobileMenuButton.querySelector('i');
+                        if (menuIcon) {
+                            menuIcon.setAttribute('data-feather', 'menu');
+                            feather.replace();
+                        }
+                    });
+                });
+            }
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        const headerOffset = 80;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Template selection functionality
+            const templateSelect = document.getElementById('template-select');
+            const selectTemplateButtons = document.querySelectorAll('.select-template');
+            
+            if (selectTemplateButtons.length && templateSelect) {
+                selectTemplateButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const template = button.getAttribute('data-template');
+                        templateSelect.value = template;
+                        
+                        // Scroll to AI tool section
+                        document.getElementById('ai-tool').scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Show notification
+                        showNotification(`Template "${template}" dipilih!`, 'success');
+                    });
+                });
+            }
+            
+            // Color option selection
+            const colorOptions = document.querySelectorAll('.color-option');
+            const colorInstruction = document.getElementById('color-instruction');
+            
+            if (colorOptions.length && colorInstruction) {
+                colorOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const color = option.getAttribute('data-color');
+                        const colorName = option.textContent.trim();
+                        
+                        // Add color to instruction
+                        colorInstruction.value = `Ubah warna dominan menjadi ${colorName.toLowerCase()}`;
+                        
+                        // Highlight selected option
+                        colorOptions.forEach(opt => opt.classList.remove('active'));
+                        option.classList.add('active');
+                        
+                        // Show notification
+                        showNotification(`Warna ${colorName} dipilih!`, 'info');
+                    });
+                });
+            }
+            
+            // AI Tool simulation
+            const processButton = document.getElementById('process-button');
+            const previewContainer = document.getElementById('preview-container');
+            const downloadButton = document.getElementById('download-button');
+            const colorPalette = document.getElementById('color-palette');
+            
+            if (processButton && previewContainer) {
+                processButton.addEventListener('click', () => {
+                    if (!colorInstruction.value.trim()) {
+                        showNotification('Silakan masukkan instruksi warna terlebih dahulu', 'error');
+                        return;
+                    }
+                    
+                    // Show loading state
+                    processButton.disabled = true;
+                    processButton.innerHTML = '<i data-feather="loader" class="animate-spin"></i><span>Memproses...</span>';
+                    feather.replace();
+                    
+                    previewContainer.classList.add('loading');
+                    
+                    // Simulate AI processing
+                    setTimeout(() => {
+                        // Show result
+                        const randomId = Math.floor(Math.random() * 1000);
+                        previewContainer.innerHTML = `<img src="https://picsum.photos/seed/${randomId}/256/256" alt="Hasil Batik" class="w-full h-full rounded-lg object-cover">`;
+                        previewContainer.classList.remove('loading');
+                        
+                        // Show color palette
+                        if (colorPalette) {
+                            colorPalette.classList.remove('hidden');
+                        }
+                        
+                        // Enable download button
+                        if (downloadButton) {
+                            downloadButton.disabled = false;
+                            downloadButton.classList.remove('bg-gray-200', 'text-gray-700');
+                            downloadButton.classList.add('btn-gold', 'text-white');
+                        }
+                        
+                        // Reset process button
+                        processButton.disabled = false;
+                        processButton.innerHTML = '<i data-feather="wand"></i><span>Proses dengan AI</span>';
+                        feather.replace();
+                        
+                        // Show success notification
+                        showNotification('Batik berhasil diproses!', 'success');
+                    }, 2000);
+                });
+            }
+            
+            // Download functionality
+            if (downloadButton) {
+                downloadButton.addEventListener('click', () => {
+                    // Create a temporary link for download
+                    const link = document.createElement('a');
+                    link.href = previewContainer.querySelector('img').src;
+                    link.download = 'batik-ai-design.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Show notification
+                    showNotification('Gambar berhasil diunduh!', 'success');
+                });
+            }
+            
+            // Contact form handling
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    // Simple form validation
+                    const inputs = contactForm.querySelectorAll('input, textarea');
+                    let isValid = true;
+                    
+                    inputs.forEach(input => {
+                        if (!input.value.trim()) {
+                            input.classList.add('border-red-500');
+                            isValid = false;
+                        } else {
+                            input.classList.remove('border-red-500');
+                        }
+                    });
+                    
+                    if (!isValid) {
+                        showNotification('Harap isi semua field yang wajib diisi', 'error');
+                        return;
+                    }
+                    
+                    // Simulate form submission
+                    const submitBtn = contactForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i data-feather="loader" class="animate-spin"></i><span>Mengirim...</span>';
+                    feather.replace();
+                    
+                    setTimeout(() => {
+                        showNotification('Terima kasih! Pesan Anda telah dikirim. Kami akan segera menghubungi Anda.', 'success');
+                        contactForm.reset();
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                        feather.replace();
+                    }, 1500);
+                });
+            }
+            
+            // Newsletter subscription
+            const newsletterForm = document.querySelector('footer form');
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const emailInput = newsletterForm.querySelector('input[type="email"]');
+                    
+                    if (!emailInput.value || !isValidEmail(emailInput.value)) {
+                        showNotification('Harap masukkan alamat email yang valid', 'error');
+                        return;
+                    }
+                    
+                    showNotification('Terima kasih telah berlangganan newsletter kami!', 'success');
+                    emailInput.value = '';
+                });
+            }
+            
+            // Helper function to validate email
+            function isValidEmail(email) {
+                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(String(email).toLowerCase());
+            }
+            
+            // Notification system
+            function showNotification(message, type = 'info') {
+                // Remove existing notifications
+                const existingNotifications = document.querySelectorAll('.notification');
+                existingNotifications.forEach(notification => {
+                    notification.remove();
+                });
+                
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `notification fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-transform duration-300 ${getNotificationClass(type)}`;
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <i data-feather="${getNotificationIcon(type)}" class="w-5 h-5 mr-2"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                feather.replace();
+                
+                // Animate in
+                setTimeout(() => {
+                    notification.classList.add('translate-x-0');
+                }, 10);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.classList.remove('translate-x-0');
+                    notification.classList.add('translate-x-full');
+                    
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+            
+            function getNotificationClass(type) {
+                const classes = {
+                    success: 'bg-green-500 text-white',
+                    error: 'bg-red-500 text-white',
+                    info: 'bg-blue-500 text-white',
+                    warning: 'bg-yellow-500 text-black'
+                };
+                return classes[type] || classes.info;
+            }
+            
+            function getNotificationIcon(type) {
+                const icons = {
+                    success: 'check-circle',
+                    error: 'alert-circle',
+                    info: 'info',
+                    warning: 'alert-triangle'
+                };
+                return icons[type] || icons.info;
+            }
+            
+            // Lazy loading for images
+            if ('IntersectionObserver' in window) {
+                const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+                
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.src; // Trigger loading
+                            imageObserver.unobserve(img);
+                        }
+                    });
+                });
+                
+                lazyImages.forEach(img => {
+                    imageObserver.observe(img);
+                });
+            }
+            
+            // Touch device detection and adjustments
+            function isTouchDevice() {
+                return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+            }
+            
+            if (isTouchDevice()) {
+                document.body.classList.add('touch-device');
+                
+                // Add larger touch targets for mobile devices
+                const buttons = document.querySelectorAll('button, a.btn-gold, a.btn-outline');
+                buttons.forEach(button => {
+                    button.classList.add('min-h-[44px]'); // Minimum touch target size
+                });
+            }
+            
+            // Performance optimization: Defer non-critical CSS
+            function loadNonCriticalCSS() {
+                // This would load additional CSS files if needed
+            }
+            
+            // Load non-critical CSS after page load
+            window.addEventListener('load', function() {
+                setTimeout(loadNonCriticalCSS, 1000);
+            });
+            
+            // Editor functionality
+            const openEditorBtn = document.getElementById('open-editor-btn');
+            const editorContainer = document.getElementById('editor-container');
+            const closeEditorBtn = document.getElementById('close-editor-btn');
+            const canvas = document.getElementById('drawing-canvas');
+            const ctx = canvas.getContext('2d');
+            const toolButtons = document.querySelectorAll('.tool-btn[data-tool]');
+            const colorPicker = document.getElementById('color-picker');
+            const clearBtn = document.getElementById('clear-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const shapeModal = document.getElementById('shape-modal');
+            const shapeOptions = document.querySelectorAll('.shape-option');
+            const applyShapeBtn = document.getElementById('apply-shape');
+            const closeShapeModalBtn = document.getElementById('close-shape-modal');
+            const zoomInBtn = document.getElementById('zoom-in-btn');
+            const zoomOutBtn = document.getElementById('zoom-out-btn');
+            const zoomLevel = document.getElementById('zoom-level');
+            
+            let isDrawing = false;
+            let currentTool = 'pencil';
+            let currentColor = '#000000';
+            let currentShape = 'rectangle';
+            let lastX = 0;
+            let lastY = 0;
+            let scale = 1;
+            let history = [];
+            let historyIndex = -1;
+            
+            // Initialize canvas
+            function initCanvas() {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                saveState();
+            }
+            
+            // Save canvas state to history
+            function saveState() {
+                if (historyIndex < history.length - 1) {
+                    history = history.slice(0, historyIndex + 1);
+                }
+                
+                history.push(canvas.toDataURL());
+                historyIndex = history.length - 1;
+            }
+            
+            // Undo functionality
+            function undo() {
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = history[historyIndex];
+                }
+            }
+            
+            // Redo functionality
+            function redo() {
+                if (historyIndex < history.length - 1) {
+                    historyIndex++;
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = history[historyIndex];
+                }
+            }
+            
+            // Open editor
+            if (openEditorBtn && editorContainer) {
+                openEditorBtn.addEventListener('click', () => {
+                    editorContainer.style.display = 'flex';
+                    initCanvas();
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            // Close editor
+            if (closeEditorBtn && editorContainer) {
+                closeEditorBtn.addEventListener('click', () => {
+                    editorContainer.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                });
+            }
+            
+            // Tool selection
+            toolButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tool = button.getAttribute('data-tool');
+                    
+                    // Update active tool
+                    toolButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    currentTool = tool;
+                    
+                    // Special handling for shape tool
+                    if (tool === 'shape') {
+                        shapeModal.style.display = 'flex';
+                    }
+                });
+            });
+            
+            // Color picker
+            if (colorPicker) {
+                colorPicker.addEventListener('change', (e) => {
+                    currentColor = e.target.value;
+                });
+            }
+            
+            // Clear canvas
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    if (confirm('Apakah Anda yakin ingin menghapus semua yang ada di canvas?')) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        saveState();
+                    }
+                });
+            }
+            
+            // Save design
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    const dataURL = canvas.toDataURL('image/png');
+                    localStorage.setItem('batikDesign', dataURL);
+                    showNotification('Desain berhasil disimpan!', 'success');
+                });
+            }
+            
+            // Export design
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => {
+                    const link = document.createElement('a');
+                    link.download = 'batik-design.png';
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
+            }
+            
+            // Shape selection
+            shapeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    shapeOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    currentShape = option.getAttribute('data-shape');
+                });
+            });
+            
+            // Apply shape
+            if (applyShapeBtn) {
+                applyShapeBtn.addEventListener('click', () => {
+                    shapeModal.style.display = 'none';
+                });
+            }
+            
+            // Close shape modal
+            if (closeShapeModalBtn) {
+                closeShapeModalBtn.addEventListener('click', () => {
+                    shapeModal.style.display = 'none';
+                    // Reset to previous tool
+                    const prevTool = document.querySelector('.tool-btn[data-tool].active');
+                    if (prevTool) {
+                        currentTool = prevTool.getAttribute('data-tool');
+                    } else {
+                        currentTool = 'pencil';
+                        document.querySelector('.tool-btn[data-tool="pencil"]').classList.add('active');
+                    }
+                });
+            }
+            
+            // Zoom in
+            if (zoomInBtn) {
+                zoomInBtn.addEventListener('click', () => {
+                    if (scale < 3) {
+                        scale += 0.1;
+                        updateZoom();
+                    }
+                });
+            }
+            
+            // Zoom out
+            if (zoomOutBtn) {
+                zoomOutBtn.addEventListener('click', () => {
+                    if (scale > 0.5) {
+                        scale -= 0.1;
+                        updateZoom();
+                    }
+                });
+            }
+            
+            // Update zoom level
+            function updateZoom() {
+                canvas.style.transform = `scale(${scale})`;
+                zoomLevel.textContent = `${Math.round(scale * 100)}%`;
+            }
+            
+            // Canvas drawing functionality
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            function startDrawing(e) {
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                lastX = (e.clientX - rect.left) / scale;
+                lastY = (e.clientY - rect.top) / scale;
+                
+                if (currentTool === 'pencil' || currentTool === 'brush' || currentTool === 'eraser') {
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                }
+            }
+            
+            function draw(e) {
+                if (!isDrawing) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / scale;
+                const y = (e.clientY - rect.top) / scale;
+                
+                ctx.lineWidth = currentTool === 'brush' ? 10 : 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                
+                if (currentTool === 'pencil') {
+                    ctx.strokeStyle = currentColor;
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                } else if (currentTool === 'brush') {
+                    ctx.strokeStyle = currentColor;
+                    ctx.globalAlpha = 0.7;
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                } else if (currentTool === 'eraser') {
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                }
+                
+                lastX = x;
+                lastY = y;
+            }
+            
+            function stopDrawing() {
+                if (isDrawing) {
+                    isDrawing = false;
+                    saveState();
+                }
+            }
+            
+            // Undo/Redo functionality
+            document.getElementById('undo-btn').addEventListener('click', undo);
+            document.getElementById('redo-btn').addEventListener('click', redo);
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (editorContainer.style.display === 'flex') {
+                    // Ctrl+Z for undo
+                    if (e.ctrlKey && e.key === 'z') {
+                        e.preventDefault();
+                        undo();
+                    }
+                    // Ctrl+Y for redo
+                    if (e.ctrlKey && e.key === 'y') {
+                        e.preventDefault();
+                        redo();
+                    }
+                    // Ctrl+S for save
+                    if (e.ctrlKey && e.key === 's') {
+                        e.preventDefault();
+                        saveBtn.click();
+                    }
+                    // Ctrl+E for export
+                    if (e.ctrlKey && e.key === 'e') {
+                        e.preventDefault();
+                        exportBtn.click();
+                    }
+                }
+            });
+            
+            // Load saved design if exists
+            window.addEventListener('load', () => {
+                const savedDesign = localStorage.getItem('batikDesign');
+                if (savedDesign) {
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0);
+                        saveState();
+                    };
+                    img.src = savedDesign;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

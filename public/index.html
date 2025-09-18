@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batik AI - Desain Batik Modern dengan Kecerdasan Buatan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-white text-gray-800">
+    <!-- Header -->
+    <header class="fixed w-full bg-white shadow-md z-40">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#" class="flex items-center space-x-2">
+                    <span class="text-2xl font-bold text-amber-600">Batik<span class="text-blue-600">AI</span></span>
+                </a>
+                
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-amber-600 transition">Beranda</a>
+                    <a href="#templates" class="text-gray-700 hover:text-amber-600 transition">Template</a>
+                    <a href="#ai-tool" class="text-gray-700 hover:text-amber-600 transition">AI Tool</a>
+                    <a href="#editor" class="text-gray-700 hover:text-amber-600 transition">Editor</a>
+                    <a href="#about" class="text-gray-700 hover:text-amber-600 transition">Tentang</a>
+                    <a href="#contact" class="text-gray-700 hover:text-amber-600 transition">Kontak</a>
+                </nav>
+                
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-700" aria-expanded="false">
+                    <i data-feather="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-3">
+                <a href="#home" class="py-2 text-gray-700 hover:text-amber-600 transition">Beranda</a>
+                <a href="#templates" class="py-2 text-gray-700 hover:text-amber-600 transition">Template</a>
+                <a href="#ai-tool" class="py-2 text-gray-700 hover:text-amber-600 transition">AI Tool</a>
+                <a href="#editor" class="py-2 text-gray-700 hover:text-amber-600 transition">Editor</a>
+                <a href="#about" class="py-2 text-gray-700 hover:text-amber-600 transition">Tentang</a>
+                <a href="#contact" class="py-2 text-gray-700 hover:text-amber-600 transition">Kontak</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-24 pb-16 gradient-bg batik-pattern">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Desain Batik Modern dengan <span class="text-amber-600">Kecerdasan Buatan</span></h1>
+                    <p class="text-lg text-gray-700 mb-6">Transformasikan ide Anda menjadi desain batik yang unik dan autentik dengan teknologi AI terkini.</p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#ai-tool" class="btn-gold text-white px-6 py-3 rounded-lg font-medium inline-flex items-center">
+                            <i data-feather="sparkles" class="mr-2"></i>
+                            <span>Coba AI Tool</span>
+                        </a>
+                        <a href="#editor" class="bg-white text-amber-600 border border-amber-600 px-6 py-3 rounded-lg font-medium inline-flex items-center">
+                            <i data-feather="edit-3" class="mr-2"></i>
+                            <span>Editor Manual</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute -top-6 -left-6 w-32 h-32 bg-amber-200 rounded-full opacity-50"></div>
+                        <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-200 rounded-full opacity-50"></div>
+                        <img src="https://batik-trusmi.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2025/08/09155218/34-666x999.png" alt="Contoh Desain Batik AI" class="relative z-10 rounded-xl shadow-xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <!-- Templates Section -->
+    <section id="templates" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Pilih Template Batik</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Pilih dari berbagai template batik tradisional dan modern sebagai dasar untuk desain Anda.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                <!-- Template Parang -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://www.batikprabuseno.com/artikel/wp-content/uploads/2023/11/motif-batik-parang-rusak-1.jpg" alt="Template Parang" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Parang</h3>
+                        <p class="text-gray-600 mb-4">Motif batik klasik dengan pola garis miring yang elegan.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Parang">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Mega Mendung -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://cnc-magazine.oramiland.com/parenting/images/Motif_Batik_Mega_Mendung.width-800.format-webp.webp" alt="Template Mega Mendung" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Mega Mendung</h3>
+                        <p class="text-gray-600 mb-4">Motif awan dengan gradasi warna yang menakjubkan.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Mega Mendung">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Template Kawung -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://i0.wp.com/berkaos.com/wp-content/uploads/2021/08/Gambar-Motif-Batik-Kawung.jpg?resize=670%2C383&ssl=1" alt="Template Kawung" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Kawung</h3>
+                        <p class="text-gray-600 mb-4">Motif geometris berbentuk bulatan seperti buah kawung.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Kawung">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Keratonan -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://nlyliyani.wordpress.com/wp-content/uploads/2012/09/peksi-naga-liman.jpg" alt="Template Keratonan" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Keratonan</h3>
+                        <p class="text-gray-600 mb-4">Motif batik khas keraton dengan corak yang megah dan elegan.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Keratonan">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Paksi Naga Liman -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://thephrase.s3.ap-southeast-1.amazonaws.com/2023/06/paksi-naga-liman.jpg" alt="Template Paksi Naga Liman" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Paksi Naga Liman</h3>
+                        <p class="text-gray-600 mb-4">Motif mitologis gabungan burung, naga, dan gajah.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Paksi Naga Liman">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Patran Keris -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://renatamfia.wordpress.com/wp-content/uploads/2017/07/semarang.jpg" alt="Template Patran Keris" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Patran Keris</h3>
+                        <p class="text-gray-600 mb-4">Motif yang terinspirasi dari bentuk keris dengan ornamen daun.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Patran Keris">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Singa Barong -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://assets.promediateknologi.id/crop/21x124:905x838/0x0/webp/photo/p2/157/2023/09/20/35f1d2afd780639b4769f94362d948b5-4004325420.jpg" alt="Template Singa Barong" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Singa Barong</h3>
+                        <p class="text-gray-600 mb-4">Motif makhluk mitologi penjaga keraton Cirebon.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Singa Barong">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Sekar Jagad -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://blog.knitto.co.id/wp-content/uploads/2024/01/Batik-Sekar-Jagad-Warna-Coklat-_-Sumber_-Freepik.jpg" alt="Template Sekar Jagad" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Sekar Jagad</h3>
+                        <p class="text-gray-600 mb-4">Motif makhluk mitologi penjaga keraton Cirebon.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Sekar Jagad">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Wadasan -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://mbatikyuuuk.files.wordpress.com/2011/12/07-wadasan-big-hand-written-batik-idr-550-000.jpg" alt="Template Wadasan" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Wadasan</h3>
+                        <p class="text-gray-600 mb-4">Motif batik dengan corak batu karang dan ornamen alam.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Wadasan">
+                            Pilih Template
+                        </button>
+                    </div>
+                    
+                </div>
+
+                
+
+                <!-- Template Taman Arum -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://i.pinimg.com/736x/26/62/e4/2662e45edbb98079dc8b253a5f573266.jpg" alt="Template Taman Arum" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Taman Arum</h3>
+                        <p class="text-gray-600 mb-4">Motif taman bunga yang harum dengan desain yang indah.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Taman Arum">
+                            Pilih Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template Truntum -->
+                <div class="template-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://upload.wikimedia.org/wikipedia/id/e/ee/BatikTruntum.JPG" alt="Template Truntum" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Truntum</h3>
+                        <p class="text-gray-600 mb-4">Motif batik dengan corak batu karang dan ornamen alam.</p>
+                        <button class="select-template btn-gold text-white px-4 py-2 rounded-lg w-full" data-template="Truntum">
+                            Pilih Template
+                        </button>
+                </div>
+
+              
+
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Tool Section -->
+    <section id="ai-tool" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Desain Batik dengan AI</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Pilih template, tentukan preferensi warna, dan biarkan AI kami membuatkan desain batik unik untuk Anda.</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="template-select">Pilih Template</label>
+                            <select id="template-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                                <option value="">-- Pilih Template --</option>
+                                <option value="Parang">Parang</option>
+                                <option value="Mega Mendung">Mega Mendung</option>
+                                <option value="Kawung">Kawung</option>
+                                <option value="Sekar Jagad">Sekar Jagad</option>
+                                <option value="Truntum">Truntum</option>
+                                <option value="Keratonan">Keratonan</option>
+                                <option value="Wadasan">Wadasan</option>
+                                <option value="Paksi Naga Liman">Paksi Naga Liman</option>
+                                <option value="Patran Keris">Patran Keris</option>
+                                <option value="Singa Barong">Singa Barong</option>
+                                <option value="Taman Arum">Taman Arum</option>
+                                
+
+                            </select>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium">Pilihan Warna</label>
+                            <div class="grid grid-cols-4 gap-3">
+                                <div class="color-option active bg-red-600 rounded-lg h-12 flex items-center justify-center text-white font-medium text-sm" data-color="#dc2626">Merah</div>
+                                <div class="color-option bg-blue-600 rounded-lg h-12 flex items-center justify-center text-white font-medium text-sm" data-color="#2563eb">Biru</div>
+                                <div class="color-option bg-green-600 rounded-lg h-12 flex items-center justify-center text-white font-medium text-sm" data-color="#16a34a">Hijau</div>
+                                <div class="color-option bg-yellow-500 rounded-lg h-12 flex items-center justify-center text-white font-medium text-sm" data-color="#eab308">Kuning</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="color-instruction">Instruksi Warna (Opsional)</label>
+                            <textarea id="color-instruction" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" rows="3" placeholder="Contoh: Saya ingin warna dominan biru dengan aksen emas..."></textarea>
+                        </div>
+                        
+                        <button id="process-button" class="btn-gold text-white px-6 py-3 rounded-lg font-medium w-full flex items-center justify-center">
+                            <i data-feather="wand" class="mr-2"></i>
+                            <span>Proses dengan AI</span>
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2 font-medium">Pratinjau Hasil</label>
+                        <div id="preview-container" class="preview-placeholder rounded-lg h-64 mb-4 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-500">
+                            <i data-feather="image" class="w-12 h-12 mb-2"></i>
+                            <p>Hasil akan muncul di sini</p>
+                        </div>
+                        
+                        <div id="color-palette" class="hidden mb-4">
+                            <label class="block text-gray-700 mb-2 font-medium">Palet Warna yang Digunakan</label>
+                            <div class="flex space-x-2">
+                                <div class="w-8 h-8 bg-red-600 rounded"></div>
+                                <div class="w-8 h-8 bg-amber-500 rounded"></div>
+                                <div class="w-8 h-8 bg-gray-800 rounded"></div>
+                                <div class="w-8 h-8 bg-white border border-gray-300 rounded"></div>
+                            </div>
+                        </div>
+                        
+                        <button id="download-button" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium w-full flex items-center justify-center" disabled>
+                            <i data-feather="download" class="mr-2"></i>
+                            <span>Download Desain</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Editor Section -->
+    <section id="editor" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Editor Batik Manual</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Buat desain batik Anda sendiri dengan alat editing yang mudah digunakan.</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Alat Desain Lengkap</h3>
+                        <p class="text-gray-600 mb-4">Gunakan editor manual kami untuk membuat desain batik dari awal atau mengedit template yang sudah ada.</p>
+                        <ul class="text-gray-600 space-y-2 mb-6">
+                            <li class="flex items-center"><i data-feather="check-circle" class="text-green-500 mr-2"></i> Berbagai alat menggambar (pensil, kuas, bentuk)</li>
+                            <li class="flex items-center"><i data-feather="check-circle" class="text-green-500 mr-2"></i> Pilihan warna lengkap dengan palet khusus batik</li>
+                            <li class="flex items-center"><i data-feather="check-circle" class="text-green-500 mr-2"></i> Layer management untuk desain yang kompleks</li>
+                            <li class="flex items-center"><i data-feather="check-circle" class="text-green-500 mr-2"></i> Simpan dan ekspor dalam berbagai format</li>
+                        </ul>
+                        <button id="open-editor-btn" class="btn-gold text-white px-6 py-3 rounded-lg font-medium inline-flex items-center">
+                            <i data-feather="edit-3" class="mr-2"></i>
+                            <span>Buka Editor</span>
+                        </button>
+                    </div>
+                    
+                    <div class="flex justify-center">
+                        <div class="relative w-full max-w-md">
+                            <div class="absolute -top-4 -left-4 w-24 h-24 bg-amber-200 rounded-full opacity-50"></div>
+                            <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-blue-200 rounded-full opacity-50"></div>
+                            <img src="https://radarmukomuko.bacakoran.co/upload/7f8dccbe9260f22ca2ff0a871de9ab2f.jpg" alt="Editor Batik" class="relative z-10 rounded-xl shadow-xl">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Editor Container -->
+    <div id="editor-container" class="editor-container">
+        <div class="editor-toolbar">
+            <div class="tool-group">
+                <div class="tool-btn active" data-tool="select" title="Select Tool">
+                    <i data-feather="mouse-pointer"></i>
+                </div>
+                <div class="tool-btn" data-tool="pencil" title="Pencil Tool">
+                    <i data-feather="edit"></i>
+                </div>
+                <div class="tool-btn" data-tool="brush" title="Brush Tool">
+                    <i data-feather="pen-tool"></i>
+                </div>
+                <div class="tool-btn" data-tool="shape" title="Shape Tool">
+                    <i data-feather="square"></i>
+                </div>
+                <div class="tool-btn" data-tool="text" title="Text Tool">
+                    <i data-feather="type"></i>
+                </div>
+                <div class="tool-btn" data-tool="eraser" title="Eraser Tool">
+                    <i data-feather="x"></i>
+                </div>
+            </div>
+            
+            <div class="tool-group">
+                <input type="color" id="color-picker" value="#000000" class="color-picker-btn">
+                <div class="tool-btn" id="stroke-width-btn" title="Stroke Width">
+                    <i data-feather="minimize"></i> 2px
+                </div>
+            </div>
+            
+            <div class="tool-group">
+                <div class="tool-btn" id="undo-btn" title="Undo">
+                    <i data-feather="rotate-ccw"></i>
+                </div>
+                <div class="tool-btn" id="redo-btn" title="Redo">
+                    <i data-feather="rotate-cw"></i>
+                </div>
+                <div class="tool-btn" id="clear-btn" title="Clear Canvas">
+                    <i data-feather="trash-2"></i>
+                </div>
+            </div>
+            
+            <div class="tool-group">
+                <div class="tool-btn" id="save-btn" title="Save Design">
+                    <i data-feather="save"></i>
+                </div>
+                <div class="tool-btn" id="export-btn" title="Export Design">
+                    <i data-feather="download"></i>
+                </div>
+                <div class="tool-btn" id="close-editor-btn" title="Close Editor">
+                    <i data-feather="x"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="drawing-canvas" width="800" height="600"></canvas>
+        </div>
+        
+        <div class="editor-bottom-bar">
+            <div class="zoom-controls">
+                <button id="zoom-out-btn" class="tool-btn">
+                    <i data-feather="zoom-out"></i>
+                </button>
+                <span id="zoom-level">100%</span>
+                <button id="zoom-in-btn" class="tool-btn">
+                    <i data-feather="zoom-in"></i>
+                </button>
+            </div>
+            <div class="cursor-position">
+                X: 0, Y: 0
+            </div>
+        </div>
+    </div>
+    
+    <!-- Shape Modal -->
+    <div id="shape-modal" class="editor-modal">
+        <div class="modal-content">
+            <h3 class="text-lg font-semibold mb-4">Pilih Bentuk</h3>
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="shape-option active" data-shape="rectangle">
+                    <i data-feather="square" class="w-8 h-8 mx-auto mb-2"></i>
+                    <span>Persegi</span>
+                </div>
+                <div class="shape-option" data-shape="circle">
+                    <i data-feather="circle" class="w-8 h-8 mx-auto mb-2"></i>
+                    <span>Lingkaran</span>
+                </div>
+                <div class="shape-option" data-shape="line">
+                    <i data-feather="minus" class="w-8 h-8 mx-auto mb-2"></i>
+                    <span>Garis</span>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button id="close-shape-modal" class="px-4 py-2 bg-gray-200 rounded-lg mr-2">Batal</button>
+                <button id="apply-shape" class="px-4 py-2 bg-amber-500 text-white rounded-lg">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Tentang BatikAI</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Mengenal lebih dalam teknologi di balik platform desain batik berbasis AI kami.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Inovasi Teknologi untuk Melestarikan Warisan Budaya</h3>
+                    <p class="text-gray-600 mb-4">BatikAI menggabungkan kecerdasan buatan dengan warisan budaya Indonesia untuk menciptakan desain batik yang inovatif dan autentik.</p>
+                    <p class="text-gray-600 mb-4">Platform kami menggunakan algoritma machine learning yang telah dilatih dengan ribuan pola batik tradisional untuk memahami karakteristik dan estetika batik Indonesia.</p>
+                    <div class="flex items-center mt-8">
+                        <div class="bg-amber-100 text-amber-800 px-4 py-2 rounded-lg mr-4 font-medium">AI Canggih</div>
+                        <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg mr-4 font-medium">Ramah Pengguna</div>
+                        <div class="bg-green-100 text-green-800 px-4 py-2 rounded-lg font-medium">Hasil Berkualitas</div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute -top-4 -left-4 w-24 h-24 bg-amber-200 rounded-full opacity-50"></div>
+                        <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-blue-200 rounded-full opacity-50"></div>
+                        <img src="https://static.wixstatic.com/media/077506_fd4804d8371f441ebdc40e032f3fcaeb~mv2.jpg/v1/fill/w_568,h_320,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/077506_fd4804d8371f441ebdc40e032f3fcaeb~mv2.jpg" alt="Teknologi AI" class="relative z-10 rounded-xl shadow-xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Hubungi Kami</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Punya pertanyaan atau masukan? Kami siap membantu Anda.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                    <form id="contact-form" class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="name">Nama Lengkap</label>
+                            <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="email">Email</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 font-medium" for="message">Pesan</label>
+                            <textarea id="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-gold text-white px-6 py-3 rounded-lg font-medium w-full">
+                            Kirim Pesan
+                        </button>
+                    </form>
+                </div>
+                
+                <div>
+                    <div class="bg-white rounded-xl shadow-md p-6 md:p-8 h-full">
+                        <h3 class="text-xl font-semibold mb-6">Informasi Kontak</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="bg-amber-100 p-3 rounded-lg mr-4">
+                                    <i data-feather="mail" class="text-amber-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Email</h4>
+                                    <p class="text-gray-600">info@batikai.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="bg-amber-100 p-3 rounded-lg mr-4">
+                                    <i data-feather="phone" class="text-amber-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Telepon</h4>
+                                    <p class="text-gray-600">+62 21 1234 5678</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="bg-amber-100 p-3 rounded-lg mr-4">
+                                    <i data-feather="map-pin" class="text-amber-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Alamat</h4>
+                                    <p class="text-gray-600">Jl. Batik Indah No. 123, Jakarta, Indonesia</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="font-medium mb-4">Ikuti Kami</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="bg-gray-100 text-gray-700 p-3 rounded-lg">
+                                    <i data-feather="facebook"></i>
+                                </a>
+                                <a href="#" class="bg-gray-100 text-gray-700 p-3 rounded-lg">
+                                    <i data-feather="instagram"></i>
+                                </a>
+                                <a href="#" class="bg-gray-100 text-gray-700 p-3 rounded-lg">
+                                    <i data-feather="twitter"></i>
+                                </a>
+                                <a href="#" class="bg-gray-100 text-gray-700 p-3 rounded-lg">
+                                    <i data-feather="youtube"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Batik<span class="text-amber-400">AI</span></h3>
+                    <p class="text-gray-400">Menggabungkan seni batik tradisional dengan teknologi AI modern untuk menciptakan desain yang inovatif.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Tautan Cepat</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-amber-400 transition">Beranda</a></li>
+                        <li><a href="#templates" class="text-gray-400 hover:text-amber-400 transition">Template</a></li>
+                        <li><a href="#ai-tool" class="text-gray-400 hover:text-amber-400 transition">AI Tool</a></li>
+                        <li><a href="#editor" class="text-gray-400 hover:text-amber-400 transition">Editor</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Sumber Daya</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-amber-400 transition">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-amber-400 transition">Tutorial</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-amber-400 transition">Dokumentasi</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-amber-400 transition">Bantuan</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Berlangganan</h4>
+                    <p class="text-gray-400 mb-4">Dapatkan update terbaru tentang fitur dan template baru.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Email Anda" class="px-4 py-2 rounded-l-lg w-full text-gray-800 focus:outline-none">
+                        <button type="submit" class="bg-amber-500 px-4 py-2 rounded-r-lg">
+                            <i data-feather="send"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 BatikAI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div id="notification" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg notification transition-transform duration-300">
+        <div class="flex items-center">
+            <i data-feather="check-circle" class="mr-2"></i>
+            <span id="notification-text">Operasi berhasil dilakukan!</span>
+        </div>
+    </div>
+
+    <script src="app.js">
+
+        
+       
+    </script>
+</body>
+</html>

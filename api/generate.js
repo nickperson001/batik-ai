@@ -1,45 +1,43 @@
-import fetch from "node-fetch";
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { template, color, instruction } = req.body;
-  const prompt = `Motif batik ${template}, warna dominan ${color}. ${instruction}`;
+  const prompt = `Batik motif ${template} dengan warna ${color}. ${instruction || ""}`;
 
-  async function generateWithEngine(engineId, size) {
-    const response = await fetch(`https://api.stability.ai/v1/generation/${engineId}/text-to-image`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.STABILITY_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        text_prompts: [{ text: prompt }],
-        cfg_scale: 7,
-        height: size.height,
-        width: size.width,
-        samples: 1
-      })
-    });
+  const engines = ["stable-diffusion-v1-6", "stable-diffusion-xl-1024-v1-0"];
+  let imageUrl = null;
 
-    if (!response.ok) throw new Error(`Engine ${engineId} failed: ${await response.text()}`);
-    const data = await response.json();
-    return "data:image/png;base64," + data.artifacts[0].base64;
-  }
-
-  try {
-    let imageUrl;
+  for (const engine of engines) {
     try {
-      imageUrl = await generateWithEngine("stable-diffusion-v1-6", { width: 512, height: 512 });
-    } catch (e) {
-      console.warn("⚠️ Fallback ke SDXL:", e.message);
-      imageUrl = await generateWithEngine("stable-diffusion-xl-1024-v1-0", { width: 1024, height: 1024 });
-    }
+      const response = await fetch(`https://api.stability.ai/v1/generation/${engine}/text-to-image`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.STABILITY_API_KEY}`,
+        },
+        body: JSON.stringify({
+          text_prompts: [{ text: prompt }],
+          width: engine.includes("xl") ? 1024 : 512,
+          height: engine.includes("xl") ? 1024 : 512,
+          samples: 1,
+        }),
+      });
 
-    res.status(200).json({ imageUrl });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+      if (!response.ok) throw new Error(await response.text());
+      const result = await response.json();
+      const b64 = result.artifacts[0].base64;
+      imageUrl = `data:image/png;base64,${b64}`;
+      break;
+    } catch (err) {
+      console.warn(`⚠️ Engine ${engine} failed:`, err.message);
+    }
   }
+
+  if (!imageUrl) {
+    return res.status(500).json({ error: "Semua engine gagal" });
+  }
+
+  res.status(200).json({ imageUrl });
 }

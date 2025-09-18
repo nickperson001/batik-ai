@@ -3,41 +3,69 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { template, color, instruction } = req.body;
-  const prompt = `Batik motif ${template} dengan warna ${color}. ${instruction || ""}`;
-
-  const engines = ["stable-diffusion-v1-6", "stable-diffusion-xl-1024-v1-0"];
-  let imageUrl = null;
-
-  for (const engine of engines) {
-    try {
-      const response = await fetch(`https://api.stability.ai/v1/generation/${engine}/text-to-image`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.STABILITY_API_KEY}`,
-        },
-        body: JSON.stringify({
-          text_prompts: [{ text: prompt }],
-          width: engine.includes("xl") ? 1024 : 512,
-          height: engine.includes("xl") ? 1024 : 512,
-          samples: 1,
-        }),
-      });
-
-      if (!response.ok) throw new Error(await response.text());
-      const result = await response.json();
-      const b64 = result.artifacts[0].base64;
-      imageUrl = `data:image/png;base64,${b64}`;
-      break;
-    } catch (err) {
-      console.warn(`⚠️ Engine ${engine} failed:`, err.message);
+  try {
+    const { prompt } = req.body;
+    if (!prompt || prompt.trim() === "") {
+      return res.status(400).json({ error: "Prompt is required" });
     }
-  }
 
-  if (!imageUrl) {
-    return res.status(500).json({ error: "Semua engine gagal" });
-  }
+    const apiKey = process.env.STABILITY_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: "API key not configured" });
+    }
 
-  res.status(200).json({ imageUrl });
+    // fallback engines
+    const engines = [
+      { id: "stable-diffusion-v1-6", size: "512x512" },
+      { id: "stable-diffusion-xl-1024-v1-0", size: "1024x1024" }
+    ];
+
+    let imageBase64 = null;
+    let lastError = null;
+
+    for (const engine of engines) {
+      try {
+        const response = await fetch(
+          `https://api.stability.ai/v1/generation/${engine.id}/text-to-image`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              text_prompts: [{ text: prompt }],
+              cfg_scale: 7,
+              width: parseInt(engine.size.split("x")[0]),
+              height: parseInt(engine.size.split("x")[1]),
+              samples: 1
+            })
+          }
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          lastError = `Engine ${engine.id} failed: ${errorText}`;
+          continue;
+        }
+
+        const data = await response.json();
+        if (data.artifacts && data.artifacts[0]) {
+          imageBase64 = data.artifacts[0].base64;
+          break;
+        }
+      } catch (err) {
+        lastError = err.message;
+      }
+    }
+
+    if (!imageBase64) {
+      return res.status(500).json({ error: "All engines failed", detail: lastError });
+    }
+
+    res.status(200).json({ image: `data:image/png;base64,${imageBase64}` });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }

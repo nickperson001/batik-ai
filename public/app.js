@@ -1,119 +1,48 @@
  // Inisialisasi Feather Icons
-        document.addEventListener('DOMContentLoaded', function() {
-            feather.replace();
-            
-            // Mobile menu toggle
-            document.getElementById('mobile-menu-button').addEventListener('click', function() {
-                const menu = document.getElementById('mobile-menu');
-                menu.classList.toggle('hidden');
-                const expanded = this.getAttribute('aria-expanded') === 'true' || false;
-                this.setAttribute('aria-expanded', !expanded);
-            });
-            
-            // Template selection
-            document.querySelectorAll('.select-template').forEach(button => {
-                button.addEventListener('click', function() {
-                    const template = this.getAttribute('data-template');
-                    document.getElementById('template-select').value = template;
-                    showNotification(`Template "${template}" dipilih`);
-                });
-            });
-            
-            // Color selection
-            document.querySelectorAll('.color-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    document.querySelectorAll('.color-option').forEach(opt => {
-                        opt.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                });
-            });
-            
-            const processButton = document.getElementById("process-button");
+       document.addEventListener("DOMContentLoaded", () => {
+  const generateBtn = document.getElementById("btn-generate");
+  const promptInput = document.getElementById("prompt-input");
+  const previewImage = document.getElementById("preview-image");
+  const statusText = document.getElementById("status-text");
 
-        // hapus listener lama kalau ada, lalu tambahkan baru
-        processButton.replaceWith(processButton.cloneNode(true));
-        const newButton = document.getElementById("process-button");
-        
+  generateBtn.addEventListener("click", async () => {
+    const prompt = promptInput.value.trim();
 
-            // // Process with AI
-            // document.getElementById('process-button').addEventListener('click', function() {
-            //     const template = document.getElementById('template-select').value;
-            //     if (!template) {
-            //         showNotification('Silakan pilih template terlebih dahulu', 'error');
-            //         return;
-            //     }
-                
-            //     const selectedColor = document.querySelector('.color-option.active').getAttribute('data-color');
-            //     const instruction = document.getElementById('color-instruction').value;
-                
-            //     // Show loading state
-            //     this.disabled = true;
-            //     this.innerHTML = '<i data-feather="loader" class="animate-spin mr-2"></i><span>Memproses...</span>';
-            //     feather.replace();
-                
-                // Process with AI
-newButton.addEventListener('click', async function() {
-    event.preventDefault();
-    console.log("Proses AI Dipanggil...");
-    const template = document.getElementById('template-select').value;
-    if (!template) {
-        showNotification('Silakan pilih template terlebih dahulu', 'error');
-        return;
+    if (!prompt) {
+      alert("⚠️ Prompt tidak boleh kosong!");
+      return;
     }
 
-    const selectedColor = document.querySelector('.color-option.active').getAttribute('data-color');
-    const instruction = document.getElementById('color-instruction').value;
-
-    // Show loading state
-    this.disabled = true;
-    this.innerHTML = '<i data-feather="loader" class="animate-spin mr-2"></i><span>Memproses...</span>';
-    feather.replace();
+    // Status awal
+    statusText.textContent = "⏳ Sedang memproses AI...";
+    previewImage.src = ""; // kosongkan dulu
 
     try {
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ template, color: selectedColor, instruction })
-    });
-    const data = await res.json();
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
 
-    if (data.imageBase64) {
-      document.getElementById('preview-container').innerHTML = `
-        <img src="data:image/png;base64,${data.imageBase64}" 
-             alt="Generated Design" class="w-full h-full object-cover rounded-lg">
-      `;
-      document.getElementById('color-palette').classList.remove('hidden');
-      document.getElementById('download-button').disabled = false;
-      showNotification('Desain berhasil dibuat!');
-    } else {
-      showNotification('Gagal membuat desain', 'error');
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("❌ Error:", data);
+        statusText.textContent = `❌ Gagal: ${data.error || "Terjadi kesalahan"}`;
+        return;
+      }
+
+      // tampilkan hasil
+      previewImage.src = data.image;
+      statusText.textContent = "✅ Berhasil!";
+
+    } catch (err) {
+      console.error("❌ Request error:", err);
+      statusText.textContent = "❌ Terjadi kesalahan jaringan.";
     }
-  } catch (err) {
-    console.error(err);
-    showNotification('Terjadi error server', 'error');
-  }
-
-    this.disabled = false;
-    this.innerHTML = '<i data-feather="wand" class="mr-2"></i><span>Proses dengan AI</span>';
-    feather.replace();
+  });
 });
-
-                    
-                    // Show color palette
-                    document.getElementById('color-palette').classList.remove('hidden');
-                    
-                    // Enable download button
-                    document.getElementById('download-button').disabled = false;
-                    
-                    // Reset button
-                    this.disabled = false;
-                    this.innerHTML = '<i data-feather="wand" class="mr-2"></i><span>Proses dengan AI</span>';
-                    feather.replace();
-                    
-                    showNotification('Desain berhasil dibuat!');
-                }, 2000);
-            
+         
             
             // Download design
             document.getElementById('download-button').addEventListener('click', function() {

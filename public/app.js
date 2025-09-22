@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const previewImg = document.getElementById("preview-img");
   const downloadBtn = document.getElementById("download-img");
 
-  // Klik tombol generate
   btnGenerate.addEventListener("click", async () => {
     const prompt = promptInput.value.trim();
 
@@ -21,15 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
     loading.classList.remove("hidden");
 
     try {
-      // Panggil API backend kamu
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, width: 512, height: 512 }), // pastikan width/height selalu ada
       });
 
       if (!response.ok) {
-        throw new Error(`Server error ${response.status}`);
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || `Server error ${response.status}`);
       }
 
       const data = await response.json();
@@ -42,20 +41,18 @@ document.addEventListener("DOMContentLoaded", () => {
       previewImg.src = data.image;
       previewContainer.classList.remove("hidden");
 
-      // Set link download
+      // Link download
       downloadBtn.href = data.image;
       downloadBtn.download = `batik-${Date.now()}.png`;
     } catch (err) {
       console.error("❌ Error:", err);
-      alert("Gagal generate batik. Coba lagi.");
+      alert(`Gagal generate batik: ${err.message}`);
     } finally {
       loading.classList.add("hidden");
     }
   });
-});
 
-
-document.addEventListener("DOMContentLoaded", () => {
+  // Tombol Canvas
   const btnCanvas = document.getElementById("btn-canvas");
   if (btnCanvas) {
     btnCanvas.addEventListener("click", () => {
@@ -63,4 +60,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-

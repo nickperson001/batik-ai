@@ -5,15 +5,16 @@ const HF_MODEL = process.env.HF_MODEL || "stabilityai/stable-diffusion-2-1";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
-
-  const { prompt, width, height } = req.body || {};
-  if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+  if (!HF_TOKEN) return res.status(500).json({ error: "HF API key not set" });
 
   try {
+    const { prompt, width = 512, height = 512 } = req.body;
+    if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+
     const payload = {
       inputs: prompt,
       options: { wait_for_model: true },
-      parameters: { width: width || 512, height: height || 512 },
+      parameters: { width, height },
     };
 
     const response = await fetch(`https://api-inference.huggingface.co/models/${HF_MODEL}`, {
@@ -23,12 +24,16 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    const image = data[0]?.generated_image || data.image_base64 || null;
 
-    if (!image) return res.status(500).json({ error: "Failed to generate image" });
+    // Ambil image base64
+    const imageBase64 = data?.[0]?.generated_image || data?.image_base64 || null;
+    if (!imageBase64) return res.status(500).json({ error: "No image returned from HF" });
 
-    res.status(200).json({ image: `data:image/png;base64,${image}` });
+    res.status(200).json({
+      image: imageBase64.startsWith("data:") ? imageBase64 : `data:image/png;base64,${imageBase64}`,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: err.message || "Internal server error" });
   }
 }

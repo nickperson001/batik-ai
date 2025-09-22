@@ -1,27 +1,17 @@
-import express from "express";
-import cors from "cors";
 import multer from "multer";
 
-const app = express();
-app.use(cors());
+export const config = { api: { bodyParser: false } };
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-});
+const upload = multer({ storage: multer.memoryStorage() });
 
-app.post("/api/upload", upload.single("file"), (req, res) => {
-  try {
+export default async function handler(req, res) {
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+
+  upload.single("file")(req, {}, (err) => {
+    if (err) return res.status(500).json({ error: err.message });
     if (!req.file) return res.status(400).json({ error: "File required" });
 
-    const b64 = req.file.buffer.toString("base64");
-    const mime = req.file.mimetype || "image/png";
-    const dataUrl = `data:${mime};base64,${b64}`;
-
-    res.json({ url: dataUrl });
-  } catch (err) {
-    res.status(500).json({ error: "Upload failed" });
-  }
-});
-
-export default app;
+    const dataUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+    res.status(200).json({ url: dataUrl });
+  });
+}

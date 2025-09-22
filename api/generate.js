@@ -1,51 +1,31 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
 import fetch from "node-fetch";
-
-dotenv.config();
-
-const app = express();
-app.use(cors());
-app.use(express.json({ limit: "10mb" }));
 
 const HF_TOKEN = process.env.HUGGINGFACE_API_KEY;
 const HF_MODEL = process.env.HF_MODEL || "stabilityai/stable-diffusion-2-1";
 
-async function hfGenerate(prompt, options = {}) {
-  if (!HF_TOKEN) throw new Error("Hugging Face API key not configured");
+export default async function handler(req, res) {
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const payload = {
-    inputs: prompt,
-    options: { wait_for_model: true },
-    parameters: {
-      width: options.width || 512,
-      height: options.height || 512,
-    },
-  };
+  const { prompt, width, height } = req.body || {};
+  if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-  const res = await fetch(`https://api-inference.huggingface.co/models/${HF_MODEL}`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${HF_TOKEN}`, Accept: "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  const data = await res.json();
-  if (!data || !data[0]?.image_base64) throw new Error("Invalid HF response");
-
-  return `data:image/png;base64,${data[0].image_base64}`;
-}
-
-app.post("/api/generate", async (req, res) => {
   try {
-    const { prompt, width, height } = req.body;
-    if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+    const payload = { inputs: prompt, options: { wait_for_model: true }, parameters: { width: width || 512, height: height || 512 } };
+    const url = `https://api-inference.huggingface.co/models/${HF_MODEL}`;
 
-    const image = await hfGenerate(prompt, { width, height });
-    res.json({ image });
+    const hfRes = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${HF_TOKEN}`, Accept: "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await hfRes.json();
+    const image = data[0]?.generated_image || data.image_base64 || null;
+
+    if (!image) return res.status(500).json({ error: "Image not generated" });
+
+    res.status(200).json({ image: `data:image/png;base64,${image}` });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
-
-export default app;
+}

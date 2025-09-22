@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Editor Batik — Manual Canvas</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/konva@8.4.3/konva.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-gray-100">
+
+  <div class="max-w-screen-xl mx-auto p-4">
+
+    <!-- Toolbar -->
+    <div class="bg-white rounded-lg shadow p-3 mb-4 flex flex-wrap gap-3 items-center">
+      <div class="flex items-center gap-2 flex-wrap">
+        <label class="font-medium">Tool:</label>
+        <select id="tool-select" class="border rounded px-2 py-1">
+          <option value="brush">Brush</option>
+          <option value="pencil">Pencil</option>
+          <option value="eraser">Eraser</option>
+          <option value="wax">Simulasi Lilin</option>
+          <option value="stamp">Stamp Motif</option>
+          <option value="shape">Shape</option>
+          <option value="pan">Pan (geser)</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <label>Size</label>
+        <input id="brush-size" type="range" min="1" max="80" value="12" />
+        <span id="brush-size-label" class="w-10 text-sm text-gray-600">12</span>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <label>Opacity</label>
+        <input id="brush-opacity" type="range" min="0.1" max="1" step="0.1" value="1" />
+        <span id="brush-opacity-label" class="w-8 text-sm text-gray-600">1.0</span>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <label>Warna</label>
+        <input id="color-picker" type="color" value="#8b4513" />
+        <button id="palette-toggle" class="px-2 py-1 border rounded">Palet Batik</button>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <label>Stamp</label>
+        <select id="stamp-select" class="border rounded px-2 py-1">
+          <option value="">-- pilih stamp --</option>
+          <option value="stamps/parang.jpg">Parang</option>
+          <option value="stamps/kawung.jpg">Kawung</option>
+          <option value="stamps/mega-mendung.png">Mega Mendung</option>
+          <option value="stamps/keratonan.jpg">Keratonan</option>
+          <option value="stamps/paksi-naga-liman.jpg">Paksi Naga Liman</option>
+          <option value="stamps/patran-keris.jpg">Patran Keris</option>
+          <option value="stamps/singa-barong.jpg">Singa Barong</option>
+          <option value="stamps/sekar-jagad.jpg">Sekar Jagad</option>
+          <option value="stamps/wadasan.jpg">Wadasan</option>
+          <option value="stamps/taman-arum.jpg">Taman Arum</option>
+          <option value="stamps/truntum.jpg">Truntum</option>
+        </select>
+        <button id="stamp-size-down" class="px-2 py-1 border rounded">-</button>
+        <button id="stamp-size-up" class="px-2 py-1 border rounded">+</button>
+        <span id="stamp-size-label" class="text-sm text-gray-600">150px</span>
+      </div>
+
+      <div class="flex items-center gap-2 ml-auto flex-wrap">
+        <button id="undo-btn" class="bg-gray-200 px-3 py-1 rounded">Undo</button>
+        <button id="redo-btn" class="bg-gray-200 px-3 py-1 rounded">Redo</button>
+        <button id="zoom-in" class="bg-gray-200 px-3 py-1 rounded">Zoom +</button>
+        <button id="zoom-out" class="bg-gray-200 px-3 py-1 rounded">Zoom -</button>
+        <button id="reset-view" class="bg-gray-200 px-3 py-1 rounded">Reset View</button>
+        <button id="export-png" class="bg-green-600 text-white px-3 py-1 rounded">Export PNG</button>
+        <button id="export-jpg" class="bg-blue-600 text-white px-3 py-1 rounded">Export JPG</button>
+        <button id="export-tile" class="bg-purple-600 text-white px-3 py-1 rounded">Export Tile</button>
+      </div>
+    </div>
+
+    <!-- Palet warna -->
+    <div id="palet-batik" class="hidden bg-white rounded-lg shadow p-3 mb-4">
+      <div class="flex gap-2 flex-wrap">
+        <button class="palet-color w-8 h-8 rounded" data-color="#7a3b00" style="background:#7a3b00"></button>
+        <button class="palet-color w-8 h-8 rounded" data-color="#6f7bb5" style="background:#6f7bb5"></button>
+        <button class="palet-color w-8 h-8 rounded" data-color="#c02e2e" style="background:#c02e2e"></button>
+        <button class="palet-color w-8 h-8 rounded" data-color="#d4af37" style="background:#d4af37"></button>
+        <button class="palet-color w-8 h-8 rounded" data-color="#ffffff" style="background:#fff;border:1px solid #ddd"></button>
+        <button class="palet-color w-8 h-8 rounded" data-color="#000000" style="background:#000"></button>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="bg-white rounded-lg shadow p-3">
+      <div id="container" class="border" style="width:100%; height:70vh; touch-action:none;"></div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="mt-4 flex flex-col md:flex-row gap-4">
+      <div class="bg-white rounded-lg shadow p-3 flex-1">
+        <h3 class="font-semibold mb-2">Upload & Import</h3>
+        <input id="file-upload" type="file" accept="image/*" />
+        <div class="mt-2">
+          <button id="add-guides" class="px-3 py-1 border rounded mr-2">Toggle Grid</button>
+          <button id="clear-canvas" class="px-3 py-1 border rounded mr-2">Clear Canvas</button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-3 w-full md:w-80">
+        <h3 class="font-semibold mb-2">Layers</h3>
+        <div id="layers-list" class="space-y-2 max-h-60 overflow-auto"></div>
+      </div>
+    </div>
+
+    <p class="mt-4 text-sm text-gray-500">Tip: simpan hasil AI lalu upload ke sini untuk diedit.</p>
+
+  </div>
+
+  <script src="editor.js" defer></script>
+</body>
+</html>

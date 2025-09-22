@@ -1,40 +1,45 @@
 import fetch from "node-fetch";
 
-const HF_TOKEN = process.env.HUGGINGFACE_API_KEY;
-const HF_MODEL = process.env.HF_MODEL || "stabilityai/stable-diffusion-2-1";
-
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
-  if (!HF_TOKEN) return res.status(500).json({ error: "HF API key not set" });
+
+  const { prompt, width = 512, height = 512 } = req.body;
+
+  if (!prompt || !prompt.trim()) {
+    return res.status(400).json({ error: "Prompt is required" });
+  }
+
+  const HF_TOKEN = process.env.HUGGINGFACE_API_KEY;
+  const HF_MODEL = process.env.HF_MODEL || "runwayml/stable-diffusion-v1-5";
+
+  if (!HF_TOKEN) return res.status(500).json({ error: "HF token not configured" });
 
   try {
-    const { prompt, width = 512, height = 512 } = req.body;
-    if (!prompt) return res.status(400).json({ error: "Prompt is required" });
-
-    const payload = { inputs: prompt, options: { wait_for_model: true }, parameters: { width, height } };
     const response = await fetch(`https://api-inference.huggingface.co/models/${HF_MODEL}`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${HF_TOKEN}`, Accept: "application/json" },
-      body: JSON.stringify(payload),
+      headers: {
+        Authorization: `Bearer ${HF_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: { width, height },
+        options: { wait_for_model: true }
+      })
     });
 
-    const text = await response.text(); // baca dulu sebagai text
-    let data;
-    try {
-      data = JSON.parse(text); // coba parse JSON
-    } catch (e) {
-      console.error("HF Response not JSON:", text);
-      return res.status(response.status).json({ error: `HF API error: ${text}` });
+    if (!response.ok) {
+      const txt = await response.text();
+      throw new Error(`HF API error: ${txt}`);
     }
 
-    const imageBase64 = data?.[0]?.generated_image || data?.image_base64 || null;
-    if (!imageBase64) return res.status(500).json({ error: "No image returned from HF" });
+    const data = await response.json();
+    const image = data[0]?.generated_image || data.image_base64 || null;
 
-    res.status(200).json({
-      image: imageBase64.startsWith("data:") ? imageBase64 : `data:image/png;base64,${imageBase64}`,
-    });
+    if (!image) return res.status(500).json({ error: "No image returned from HF" });
+
+    res.status(200).json({ image: image.startsWith("data:") ? image : `data:image/png;base64,${image}` });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message || "Internal server error" });
+    res.status(500).json({ error: err.message });
   }
 }

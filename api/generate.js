@@ -1,36 +1,66 @@
-import fetch from "node-fetch";
-
+// api/generate.js
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   try {
     const { prompt } = req.body;
-    if (!prompt || !prompt.trim()) return res.status(400).json({ error: "Prompt required" });
+    if (!prompt || !prompt.trim()) {
+      return res.status(400).json({ error: 'Prompt required' });
+    }
 
     const HF_TOKEN = process.env.HUGGINGFACE_API_KEY;
-    if (!HF_TOKEN) return res.status(500).json({ error: "HF API key not configured" });
+    if (!HF_TOKEN) {
+      return res.status(500).json({ error: 'HF API key not configured' });
+    }
 
-    const HF_MODEL = process.env.HF_MODEL || "stabilityai/stable-diffusion-2-1";
+    const HF_MODEL = process.env.HF_MODEL || 'stabilityai/stable-diffusion-2-1';
+    
+    // Enhanced prompt untuk hasil batik yang lebih baik
+    const enhancedPrompt = `batik pattern, ${prompt}, traditional Indonesian batik, intricate details, high resolution, cultural art`;
+    
+    console.log('Generating image for prompt:', enhancedPrompt);
 
-    const response = await fetch(`https://api-inference.huggingface.co/models/${HF_MODEL}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${HF_TOKEN}`,
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ inputs: prompt })
+    const response = await fetch(
+      `https://api-inference.huggingface.co/models/${HF_MODEL}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${HF_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: enhancedPrompt,
+          parameters: {
+            num_inference_steps: 50,
+            guidance_scale: 7.5,
+            width: 512,
+            height: 512
+          }
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HF API error: ${response.status} - ${errorText}`);
+    }
+
+    // Get image as array buffer
+    const imageBuffer = await response.arrayBuffer();
+    const base64Image = Buffer.from(imageBuffer).toString('base64');
+    const dataUrl = `data:image/jpeg;base64,${base64Image}`;
+
+    res.status(200).json({ 
+      image: dataUrl,
+      prompt: enhancedPrompt
     });
 
-    const data = await response.json();
-
-    if (data.error) return res.status(500).json({ error: `HF API error: ${data.error}` });
-
-    const b64 = data?.[0]?.generated_image || data?.image_base64 || null;
-    if (!b64) return res.status(500).json({ error: "HF API returned no image" });
-
-    res.status(200).json({ image: b64.startsWith("data:") ? b64 : `data:image/png;base64,${b64}` });
   } catch (err) {
-    res.status(500).json({ error: `HF API error: ${err.message}` });
+    console.error('Error in generate API:', err);
+    res.status(500).json({ 
+      error: `Generation failed: ${err.message}` 
+    });
   }
 }

@@ -1,30 +1,31 @@
 // public/app.js
-document.addEventListener('DOMContentLoaded', () => {
-  const promptInput = document.getElementById('prompt-input');
-  const btnGenerate = document.getElementById('btn-generate');
-  const previewImg = document.getElementById('preview-img');
-  const previewContainer = document.getElementById('preview-container');
-  const downloadBtn = document.getElementById('download-img');
-  const loadingSpinner = document.getElementById('loading-spinner');
+document.addEventListener("DOMContentLoaded", () => {
+  const promptInput = document.getElementById("prompt-input");
+  const btnGenerate = document.getElementById("btn-generate");
+  const previewImg = document.getElementById("preview-img");
+  const previewContainer = document.getElementById("preview-container");
+  const downloadBtn = document.getElementById("download-img");
+  const loadingSpinner = document.getElementById("loading");
 
-  btnGenerate.addEventListener('click', async () => {
+  btnGenerate.addEventListener("click", async () => {
     const prompt = promptInput.value.trim();
-    if (!prompt) {
-      alert('Prompt tidak boleh kosong');
-      return;
-    }
+    if (!prompt) return alert("Prompt tidak boleh kosong");
 
     // Show loading state
+    previewContainer.classList.add("hidden");
+    previewImg.src = "";
     btnGenerate.disabled = true;
-    btnGenerate.textContent = 'Generating...';
-    if (loadingSpinner) loadingSpinner.classList.remove('hidden');
-    previewContainer.classList.add('hidden');
+    btnGenerate.innerHTML = '<i data-feather="loader" class="animate-spin inline mr-2"></i> Generating...';
+    
+    if (loadingSpinner) {
+      loadingSpinner.classList.remove("hidden");
+    }
 
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
+      const res = await fetch("/api/generate", {
+        method: "POST",
         headers: { 
-          'Content-Type': 'application/json' 
+          "Content-Type": "application/json" 
         },
         body: JSON.stringify({ prompt })
       });
@@ -40,27 +41,52 @@ document.addEventListener('DOMContentLoaded', () => {
       previewImg.alt = `Generated batik: ${prompt}`;
       
       // Show preview container
-      previewContainer.classList.remove('hidden');
+      previewContainer.classList.remove("hidden");
       
       // Set up download
       downloadBtn.href = data.image;
       downloadBtn.download = `batik-${Date.now()}.png`;
-      downloadBtn.textContent = 'Download Batik';
+      
+      // Update feather icons
+      if (typeof feather !== 'undefined') {
+        feather.replace();
+      }
 
     } catch (err) {
-      console.error('❌ Generation error:', err);
-      alert('Gagal generate batik: ' + err.message);
+      console.error("❌ Generation error:", err);
+      
+      // More user-friendly error messages
+      let errorMessage = "Gagal generate batik: ";
+      if (err.message.includes('Network error') || err.message.includes('Failed to fetch')) {
+        errorMessage += "Koneksi internet bermasalah. Periksa koneksi Anda.";
+      } else if (err.message.includes('API key') || err.message.includes('Authentication')) {
+        errorMessage += "Masalah konfigurasi server. Silakan hubungi administrator.";
+      } else if (err.message.includes('rate limit') || err.message.includes('quota')) {
+        errorMessage += "Quota API habis. Silakan coba lagi nanti.";
+      } else {
+        errorMessage += err.message;
+      }
+      
+      alert(errorMessage);
     } finally {
       // Reset loading state
       btnGenerate.disabled = false;
-      btnGenerate.textContent = 'Generate Batik';
-      if (loadingSpinner) loadingSpinner.classList.add('hidden');
+      btnGenerate.innerHTML = '<i data-feather="sparkles" class="inline mr-2"></i> Generate';
+      
+      if (loadingSpinner) {
+        loadingSpinner.classList.add("hidden");
+      }
+      
+      // Update feather icons
+      if (typeof feather !== 'undefined') {
+        feather.replace();
+      }
     }
   });
 
   // Enter key support
-  promptInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
+  promptInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
       btnGenerate.click();
     }
   });

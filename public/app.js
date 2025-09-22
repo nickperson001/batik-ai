@@ -9,7 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   btnGenerate.addEventListener("click", async () => {
     const prompt = promptInput.value.trim();
-    if (!prompt) return alert("Prompt tidak boleh kosong");
+    if (!prompt) {
+      alert("Prompt tidak boleh kosong");
+      return;
+    }
 
     // Show loading state
     previewContainer.classList.add("hidden");
@@ -22,7 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch("/api/generate", {
+      // Gunakan absolute URL untuk menghindari path issues
+      const API_URL = '/api/generate';
+      console.log('Calling API:', API_URL, 'with prompt:', prompt);
+
+      const res = await fetch(API_URL, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" 
@@ -30,39 +37,61 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ prompt })
       });
 
+      console.log('Response status:', res.status);
+
+      // Check content type
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const textResponse = await res.text();
+        console.error('Non-JSON response:', textResponse.substring(0, 200));
+        throw new Error(`Expected JSON but got: ${contentType}`);
+      }
+
       const data = await res.json();
+      console.log('Response data:', data);
 
       if (!res.ok) {
         throw new Error(data.error || `HTTP error! status: ${res.status}`);
       }
 
+      if (!data.image) {
+        throw new Error('No image data received from API');
+      }
+
       // Set image source
+      previewImg.onload = () => {
+        previewContainer.classList.remove("hidden");
+        console.log('Image loaded successfully');
+      };
+      
+      previewImg.onerror = () => {
+        throw new Error('Failed to load generated image');
+      };
+      
       previewImg.src = data.image;
       previewImg.alt = `Generated batik: ${prompt}`;
-      
-      // Show preview container
-      previewContainer.classList.remove("hidden");
       
       // Set up download
       downloadBtn.href = data.image;
       downloadBtn.download = `batik-${Date.now()}.png`;
       
-      // Update feather icons
-      if (typeof feather !== 'undefined') {
-        feather.replace();
-      }
+      // Force show container after a delay (fallback)
+      setTimeout(() => {
+        previewContainer.classList.remove("hidden");
+      }, 1000);
 
     } catch (err) {
       console.error("❌ Generation error:", err);
       
-      // More user-friendly error messages
       let errorMessage = "Gagal generate batik: ";
-      if (err.message.includes('Network error') || err.message.includes('Failed to fetch')) {
+      
+      if (err.message.includes('Method not allowed')) {
+        errorMessage += "API endpoint tidak menerima POST request. ";
+        errorMessage += "Silakan coba refresh halaman.";
+      } else if (err.message.includes('Failed to fetch')) {
         errorMessage += "Koneksi internet bermasalah. Periksa koneksi Anda.";
-      } else if (err.message.includes('API key') || err.message.includes('Authentication')) {
-        errorMessage += "Masalah konfigurasi server. Silakan hubungi administrator.";
-      } else if (err.message.includes('rate limit') || err.message.includes('quota')) {
-        errorMessage += "Quota API habis. Silakan coba lagi nanti.";
+      } else if (err.message.includes('Expected JSON')) {
+        errorMessage += "Server mengembalikan response yang tidak expected.";
       } else {
         errorMessage += err.message;
       }
@@ -90,4 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btnGenerate.click();
     }
   });
+
+  // Test API connection on load
+  console.log('Batik AI Generator loaded');
 });

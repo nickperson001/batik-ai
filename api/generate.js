@@ -1,28 +1,63 @@
 // api/generate.js
-export default async function handler(req, res) {
+const fetch = require('node-fetch');
+
+module.exports = async (req, res) => {
+  console.log('Request method:', req.method);
+  console.log('Request path:', req.url);
+  
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  // Only allow POST method
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    console.log('Method not allowed, received:', req.method);
+    return res.status(405).json({ 
+      error: 'Method not allowed. Only POST requests are accepted.' 
+    });
   }
 
   try {
-    const { prompt } = req.body;
+    console.log('Processing POST request...');
+    
+    // Parse request body
+    let body;
+    try {
+      body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      console.log('Parsed body:', body);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      return res.status(400).json({ error: 'Invalid JSON in request body' });
+    }
+
+    const { prompt } = body;
     if (!prompt || !prompt.trim()) {
-      return res.status(400).json({ error: 'Prompt required' });
+      return res.status(400).json({ error: 'Prompt is required' });
     }
 
     const HF_TOKEN = process.env.HUGGINGFACE_API_KEY;
     if (!HF_TOKEN) {
       console.error('HUGGINGFACE_API_KEY is missing');
-      return res.status(500).json({ error: 'API key not configured. Please check your environment variables.' });
+      return res.status(500).json({ 
+        error: 'Server configuration error: API key not configured' 
+      });
     }
 
     const HF_MODEL = process.env.HF_MODEL || 'runwayml/stable-diffusion-v1-5';
-    
-    // Enhanced prompt untuk hasil batik yang lebih baik
-    const enhancedPrompt = `batik pattern, ${prompt}, traditional Indonesian batik, intricate details, high resolution, cultural art, textile pattern`;
-    
-    console.log('Generating image for prompt:', enhancedPrompt);
+    const enhancedPrompt = `batik pattern, ${prompt}, traditional Indonesian batik, intricate details, high resolution`;
 
+    console.log('Calling Hugging Face API...');
+    console.log('Model:', HF_MODEL);
+    console.log('Prompt:', enhancedPrompt);
+
+    // Call Hugging Face API
     const response = await fetch(
       `https://api-inference.huggingface.co/models/${HF_MODEL}`,
       {
@@ -43,70 +78,37 @@ export default async function handler(req, res) {
       }
     );
 
-    console.log('HF API Response status:', response.status);
+    console.log('HF API response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('HF API error:', response.status, errorText);
-      throw new Error(`HF API error: ${response.status} - ${errorText}`);
+      return res.status(500).json({ 
+        error: `Hugging Face API error: ${response.status}` 
+      });
     }
 
-    // Check content type to handle different response formats
-    const contentType = response.headers.get('content-type');
+    // Get image buffer
+    const imageBuffer = await response.buffer();
+    console.log('Image received, size:', imageBuffer.length, 'bytes');
     
-    if (contentType && contentType.includes('application/json')) {
-      // Handle JSON response (some models return JSON with base64)
-      const jsonData = await response.json();
-      console.log('JSON response received');
-      
-      if (jsonData.error) {
-        throw new Error(`HF API error: ${jsonData.error}`);
-      }
-      
-      let base64Image;
-      if (jsonData[0] && jsonData[0].generated_image) {
-        base64Image = jsonData[0].generated_image;
-      } else if (jsonData.image_base64) {
-        base64Image = jsonData.image_base64;
-      } else {
-        throw new Error('No image data found in JSON response');
-      }
-      
-      const dataUrl = `data:image/png;base64,${base64Image}`;
-      
-      res.status(200).json({ 
-        image: dataUrl,
-        prompt: enhancedPrompt
-      });
-    } else {
-      // Handle binary image response (most common)
-      console.log('Binary image response received');
-      const imageBuffer = await response.arrayBuffer();
-      const base64Image = Buffer.from(imageBuffer).toString('base64');
-      const dataUrl = `data:image/png;base64,${base64Image}`;
+    // Convert to base64
+    const base64Image = imageBuffer.toString('base64');
+    const dataUrl = `data:image/png;base64,${base64Image}`;
 
-      res.status(200).json({ 
-        image: dataUrl,
-        prompt: enhancedPrompt
-      });
-    }
+    console.log('Sending response with image data');
+    
+    res.status(200).json({ 
+      success: true,
+      image: dataUrl,
+      prompt: enhancedPrompt,
+      imageSize: imageBuffer.length
+    });
 
   } catch (err) {
     console.error('Error in generate API:', err);
-    
-    // Provide more specific error messages
-    if (err.message.includes('Failed to fetch')) {
-      res.status(500).json({ 
-        error: 'Network error: Cannot connect to Hugging Face API. Please check your internet connection.' 
-      });
-    } else if (err.message.includes('API key')) {
-      res.status(500).json({ 
-        error: 'Authentication error: Invalid or missing Hugging Face API key.' 
-      });
-    } else {
-      res.status(500).json({ 
-        error: `Generation failed: ${err.message}` 
-      });
-    }
+    res.status(500).json({ 
+      error: `Internal server error: ${err.message}` 
+    });
   }
-}
+};

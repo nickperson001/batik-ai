@@ -11,21 +11,22 @@ export default async function handler(req, res) {
     const { prompt, width = 512, height = 512 } = req.body;
     if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
-    const payload = {
-      inputs: prompt,
-      options: { wait_for_model: true },
-      parameters: { width, height },
-    };
-
+    const payload = { inputs: prompt, options: { wait_for_model: true }, parameters: { width, height } };
     const response = await fetch(`https://api-inference.huggingface.co/models/${HF_MODEL}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${HF_TOKEN}`, Accept: "application/json" },
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
+    const text = await response.text(); // baca dulu sebagai text
+    let data;
+    try {
+      data = JSON.parse(text); // coba parse JSON
+    } catch (e) {
+      console.error("HF Response not JSON:", text);
+      return res.status(response.status).json({ error: `HF API error: ${text}` });
+    }
 
-    // Ambil image base64
     const imageBase64 = data?.[0]?.generated_image || data?.image_base64 || null;
     if (!imageBase64) return res.status(500).json({ error: "No image returned from HF" });
 

@@ -47,8 +47,7 @@ function updateLayersList() {
   drawLayer.getChildren().forEach((node, i) => {
     const div = document.createElement("div");
     div.textContent = `${node.getClassName()} #${i}`;
-    div.className =
-      "px-2 py-1 bg-gray-100 rounded text-sm flex justify-between items-center";
+    div.className = "px-2 py-1 bg-gray-100 rounded text-sm flex justify-between items-center";
     list.appendChild(div);
   });
 }
@@ -267,20 +266,63 @@ document.getElementById("clear-canvas").addEventListener("click", () => {
   drawLayer.draw();
 });
 
-// Export PNG / JPG / Tile
+// Export PNG / JPG / Tile dengan background putih
 document.getElementById("export-png").addEventListener("click", () => {
+  // Set background putih sementara untuk export
+  const originalFill = stage.find('Rect')[0] ? stage.find('Rect')[0].fill() : null;
+  
+  // Add white background rectangle
+  const backgroundRect = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: stage.width(),
+    height: stage.height(),
+    fill: 'white'
+  });
+  drawLayer.add(backgroundRect);
+  drawLayer.draw();
+  
   const link = document.createElement("a");
   link.download = "batik.png";
-  link.href = stage.toDataURL({ mimeType: "image/png" });
+  link.href = stage.toDataURL({ mimeType: "image/png", pixelRatio: 2 });
   link.click();
+  
+  // Remove white background after export
+  backgroundRect.destroy();
+  drawLayer.draw();
 });
+
 document.getElementById("export-jpg").addEventListener("click", () => {
+  const backgroundRect = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: stage.width(),
+    height: stage.height(),
+    fill: 'white'
+  });
+  drawLayer.add(backgroundRect);
+  drawLayer.draw();
+  
   const link = document.createElement("a");
   link.download = "batik.jpg";
-  link.href = stage.toDataURL({ mimeType: "image/jpeg", quality: 0.9 });
+  link.href = stage.toDataURL({ mimeType: "image/jpeg", quality: 0.9, pixelRatio: 2 });
   link.click();
+  
+  backgroundRect.destroy();
+  drawLayer.draw();
 });
+
 document.getElementById("export-tile").addEventListener("click", () => {
+  const backgroundRect = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: stage.width() / 2,
+    height: stage.height() / 2,
+    fill: 'white'
+  });
+  drawLayer.add(backgroundRect);
+  drawLayer.draw();
+  
   const dataURL = stage.toDataURL({
     pixelRatio: 2,
     x: 0,
@@ -292,4 +334,7 @@ document.getElementById("export-tile").addEventListener("click", () => {
   link.download = "batik-tile.png";
   link.href = dataURL;
   link.click();
+  
+  backgroundRect.destroy();
+  drawLayer.draw();
 });

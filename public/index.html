@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="../assets/favicon.ico">
 </head>
 <body class="bg-white text-gray-800">
     <!-- Header -->
@@ -332,7 +333,7 @@
                             <li class="flex items-center"><i data-feather="check-circle" class="text-green-500 mr-2"></i> Simpan dan ekspor dalam berbagai format</li>
                         </ul>
                         <button id="btn-canvas" class="btn-gold text-white px-3 py-3 rounded-lg font-medium inline-flex items-center">
-                            <i data-feather="sparkles" class="inline mr-2"></i>
+                            <i data-feather="sparkles" class="inline mr-2""></i>
                             Buka Editor Canvas
                         </button>
                     </div>
@@ -521,6 +522,11 @@ Jl. Perjuangan No.1, Karyamulya, Kec. Kesambi, Kota Cirebon, Jawa Barat 45135</p
 </div>
     </footer>
 
+<!-- versi standalone Xenova transformers -->
+    <script type="module">
+    import * as transformers from "https://cdn.jsdelivr.net/npm/@xenova/transformers";
+    window.transformers = transformers;
+    </script>
     <script src="app.js" defer></script>
     <script>feather.replace();</script>
 </body>
